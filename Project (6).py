@@ -47,7 +47,8 @@ class GameApp:
         self.selected_hero = None
         
         # Image setup
-        self.image_folder = "/mnt/chromeos/MyFiles/Downloads/Project pictures"
+        # Use a relative images/ folder by default (safer for other machines)
+        self.image_folder = os.path.join(os.path.dirname(__file__), "images")
         self.hero_images = {}
         self.monster_images = {}
         self.image_map = {
@@ -158,8 +159,16 @@ class GameApp:
         # Updates the display after each action, showing current HP and disabling the buttons for dead characters 
     def update_display(self):
         for i, h in enumerate(self.heroes):
-            color = "green" if not h.Is_alive() or h.turn else "lightgreen"
-            self.hero_buttons[i].config(text=f"{h.name}\nHP: {h.hp}", bg=color) 
+            if not h.Is_alive():
+                color = "gray"
+                state = "disabled"
+            elif h.turn:
+                color = "lightgray"
+                state = "disabled"
+            else:
+                color = "lightgreen"
+                state = "normal"
+            self.hero_buttons[i].config(text=f"{h.name}\nHP: {h.hp}", bg=color, state=state) 
             
         for i, m in enumerate(self.monsters):
             state = "disabled" if not m.Is_alive() else "normal"
